@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frequenz zu MS Tabelle</title>
+    <style>
+        /* --- SCREEN STYLES (Für die Anzeige im Browser) --- */
+        :root {
+            --bg-color: #121318;
+            --card-bg: #1a1c23;
+            --text-color: #e2e8f0;
+            --text-muted: #94a3b8;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --border: #2e323f;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 24px;
+            text-align: center;
+            letter-spacing: -0.5px;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: -10px;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        .btn-print {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2);
+        }
+
+        .btn-print:hover {
+            background-color: var(--accent-hover);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+            font-size: 15px;
+        }
+
+        th {
+            background-color: #242731;
+            color: #fff;
+            font-weight: 600;
+            padding: 12px 8px;
+            border: 1px solid var(--border);
+        }
+
+        th.note-col {
+            background-color: #1e212a;
+        }
+
+        td {
+            padding: 10px 8px;
+            border: 1px solid var(--border);
+        }
+
+        tr:nth-child(even) {
+            background-color: #1e2028;
+        }
+
+        .note-name {
+            font-weight: bold;
+            color: #fff;
+            background-color: #242731;
+        }
+
+        .highlight-corrected {
+            color: #60a5fa;
+            font-weight: 500;
+        }
+
+        /* --- PRINT STYLES (Tritt automatisch beim Drucken in Kraft) --- */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 15mm;
+            }
+            
+            body {
+                background: white;
+                color: black;
+                padding: 0;
+            }
+
+            .container {
+                border: none;
+                box-shadow: none;
+                padding: 0;
+                background: transparent;
+                width: 100%;
+            }
+
+            h1 {
+                color: black;
+                font-size: 20pt;
+                margin-bottom: 5px;
+            }
+
+            p.subtitle {
+                color: #555;
+                font-size: 10pt;
+                margin-bottom: 20px;
+            }
+
+            .actions {
+                display: none;
+            }
+
+            table {
+                width: 100%;
+                font-size: 11pt;
+            }
+
+            th {
+                background-color: #f1f5f9 !important;
+                color: black !important;
+                border: 1px solid #94a3b8 !important;
+            }
+
+            td {
+                border: 1px solid #cbd5e1 !important;
+                color: black !important;
+            }
+
+            tr:nth-child(even) {
+                background-color: #f8fafc !important;
+            }
+
+            .note-name {
+                background-color: #e2e8f0 !important;
+                color: black !important;
+            }
+
+            .highlight-corrected {
+                color: black !important;
+                font-weight: bold;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Audio-Tools: Frequenz zu Millisekunden</h1>
+        <p class="subtitle">Perfekt zum Einstellen von Pre-Delays, Reverb &amp; Kompressor-Release (Korrigierte Version)</p>
+        
+        <div class="actions">
+            <button class="btn-print" onclick="window.print()">Tabelle drucken</button>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th class="note-col" rowspan="2">Note</th>
+                    <th colspan="2">Oktave 1</th>
+                    <th colspan="2">Oktave 2</th>
+                    <th colspan="2">Oktave 3</th>
+                </tr>
+                <tr>
+                    <th>Hz</th>
+                    <th>ms</th>
+                    <th>Hz</th>
+                    <th>ms</th>
+                    <th>Hz</th>
+                    <th>ms</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="note-name">C</td>
+                    <td>32,70</td>
+                    <td>30,58</td>
+                    <td>65,41</td>
+                    <td>15,29</td>
+                    <td>130,81</td>
+                    <td>7,64</td>
+                </tr>
+                <tr>
+                    <td class="note-name">Db</td>
+                    <td>34,65</td>
+                    <td>28,86</td>
+                    <td>69,30</td>
+                    <td>14,43</td>
+                    <td>138,59</td>
+                    <td>7,22</td>
+                </tr>
+                <tr>
+                    <td class="note-name">D</td>
+                    <td>36,71</td>
+                    <td>27,24</td>
+                    <td>73,42</td>
+                    <td>13,62</td>
+                    <td>146,83</td>
+                    <td>6,81</td>
+                </tr>
+                <tr>
+                    <td class="note-name">Eb</td>
+                    <td>38,89</td>
+                    <td>25,71</td>
+                    <td>77,78</td>
+                    <td>12,86</td>
+                    <td>155,56</td>
+                    <td>6,43</td>
+                </tr>
+                <tr>
+                    <td class="note-name">E</td>
+                    <td>41,20</td>
+                    <td>24,27</td>
+                    <td>82,41</td>
+                    <td>12,13</td>
+                    <td>164,81</td>
+                    <td>6,07</td>
+                </tr>
+                <tr>
+                    <td class="note-name">F</td>
+                    <td>43,65</td>
+                    <td>22,91</td>
+                    <td>87,31</td>
+                    <td>11,45</td>
+                    <td>174,61</td>
+                    <td>5,73</td>
+                </tr>
+                <tr>
+                    <td class="note-name">Gb</td>
+                    <td>46,25</td>
+                    <td>21,62</td>
+                    <td>92,50</td>
+                    <td>10,81</td>
+                    <td>185,00</td>
+                    <td>5,41</td>
+                </tr>
+                <tr>
+                    <td class="note-name">G</td>
+                    <td class="highlight-corrected">49,00</td>
+                    <td>20,41</td>
+                    <td>98,00</td>
+                    <td>10,20</td>
+                    <td>196,00</td>
+                    <td>5,10</td>
+                </tr>
+                <tr>
+                    <td class="note-name">Ab</td>
+                    <td class="highlight-corrected">51,91</td>
+                    <td>19,26</td>
+                    <td>103,83</td>
+                    <td>9,63</td>
+                    <td>207,65</td>
+                    <td>4,81</td>
+                </tr>
+                <tr>
+                    <td class="note-name">A</td>
+                    <td>55,00</td>
+                    <td>18,18</td>
+                    <td>110,00</td>
+                    <td>9,09</td>
+                    <td>220,00</td>
+                    <td>4,55</td>
+                </tr>
+                <tr>
+                    <td class="note-name">Bb</td>
+                    <td>58,27</td>
+                    <td>17,16</td>
+                    <td>116,54</td>
+                    <td>8,58</td>
+                    <td>233,08</td>
+                    <td>4,29</td>
+                </tr>
+                <tr>
+                    <td class="note-name">B</td>
+                    <td>61,74</td>
+                    <td>16,20</td>
+                    <td>123,47</td>
+                    <td>8,10</td>
+                    <td>246,94</td>
+                    <td>4,05</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>
