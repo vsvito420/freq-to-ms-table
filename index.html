@@ -2,326 +2,1306 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Frequenz zu MS Tabelle</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="Frequenz zu Millisekunden: Noten-Tabelle, Rechner und Tempo-Delay für Pre-Delay, Reverb und Kompressor-Release.">
+    <meta name="theme-color" content="#121318">
+    <title>Frequenz ↔ ms</title>
     <style>
-        /* --- SCREEN STYLES (Für die Anzeige im Browser) --- */
         :root {
-            --bg-color: #121318;
-            --card-bg: #1a1c23;
-            --text-color: #e2e8f0;
-            --text-muted: #94a3b8;
+            --bg: #121318;
+            --card: #1a1c23;
+            --card-2: #20232c;
+            --head: #242731;
+            --text: #e2e8f0;
+            --muted: #94a3b8;
             --accent: #3b82f6;
             --accent-hover: #2563eb;
+            --accent-soft: rgba(59, 130, 246, 0.16);
+            --scale: rgba(34, 197, 94, 0.13);
+            --scale-text: #4ade80;
             --border: #2e323f;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.35);
+            --radius: 12px;
+            --mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+            color-scheme: dark;
         }
+
+        :root[data-theme="light"] {
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --card-2: #f8fafc;
+            --head: #e9eef5;
+            --text: #0f172a;
+            --muted: #64748b;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --accent-soft: rgba(37, 99, 235, 0.12);
+            --scale: rgba(22, 163, 74, 0.12);
+            --scale-text: #15803d;
+            --border: #dbe2ea;
+            --shadow: 0 10px 25px -8px rgba(15, 23, 42, 0.15);
+            color-scheme: light;
+        }
+
+        @media (prefers-color-scheme: light) {
+            :root:not([data-theme="dark"]) {
+                --bg: #f1f5f9;
+                --card: #ffffff;
+                --card-2: #f8fafc;
+                --head: #e9eef5;
+                --text: #0f172a;
+                --muted: #64748b;
+                --accent: #2563eb;
+                --accent-hover: #1d4ed8;
+                --accent-soft: rgba(37, 99, 235, 0.12);
+                --scale: rgba(22, 163, 74, 0.12);
+                --scale-text: #15803d;
+                --border: #dbe2ea;
+                --shadow: 0 10px 25px -8px rgba(15, 23, 42, 0.15);
+                color-scheme: light;
+            }
+        }
+
+        * { box-sizing: border-box; }
+
+        html { -webkit-text-size-adjust: 100%; }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            background: var(--bg);
+            color: var(--text);
             margin: 0;
-            padding: 40px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            line-height: 1.45;
         }
 
-        .container {
-            max-width: 800px;
-            width: 100%;
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border);
+        button, input, select { font: inherit; color: inherit; }
+
+        /* ---------- Header ---------- */
+        header.top {
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 24px 20px 8px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
         }
 
         h1 {
-            margin-top: 0;
-            font-size: 24px;
-            text-align: center;
+            margin: 0;
+            font-size: clamp(20px, 3vw, 26px);
             letter-spacing: -0.5px;
         }
 
-        p.subtitle {
-            color: var(--text-muted);
-            text-align: center;
-            margin-top: -10px;
-            margin-bottom: 25px;
+        .subtitle {
+            color: var(--muted);
+            margin: 4px 0 0;
             font-size: 14px;
         }
 
-        .actions {
-            display: flex;
+        .top-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
             justify-content: center;
-            margin-bottom: 25px;
-        }
-
-        .btn-print {
-            background-color: var(--accent);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            font-size: 15px;
-            font-weight: 600;
-            border-radius: 6px;
+            gap: 6px;
+            background: var(--card-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            min-height: 38px;
             cursor: pointer;
-            transition: background 0.2s ease;
-            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2);
+            font-size: 14px;
+            transition: background .15s, border-color .15s;
+            white-space: nowrap;
+        }
+        .btn:hover { border-color: var(--accent); }
+        .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+        .btn.primary:hover { background: var(--accent-hover); }
+        .btn.icon { width: 38px; padding: 0; }
+        .btn svg { width: 18px; height: 18px; }
+
+        :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+        /* ---------- Layout ---------- */
+        main {
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 12px 20px 40px;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 360px;
+            gap: 20px;
+            align-items: start;
         }
 
-        .btn-print:hover {
-            background-color: var(--accent-hover);
+        .side { display: grid; gap: 20px; position: sticky; top: 16px; }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 18px;
+            min-width: 0;
+        }
+
+        .card h2 {
+            margin: 0 0 12px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .hint { color: var(--muted); font-size: 13px; margin: 8px 0 0; }
+
+        /* ---------- Controls ---------- */
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 10px 12px;
+            margin-bottom: 14px;
+        }
+
+        .field.wide { grid-column: span 2; }
+        .field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+        .field > span { font-size: 12px; color: var(--muted); font-weight: 500; }
+
+        input[type="number"], input[type="text"], select {
+            width: 100%;
+            background: var(--card-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 10px;
+            min-height: 38px;
+            font-size: 15px;
+        }
+        input:focus, select:focus { border-color: var(--accent); outline: none; }
+
+        .inline { display: flex; gap: 6px; align-items: center; }
+        .inline > * { flex: 1; min-width: 0; }
+        .inline > .sep { flex: none; color: var(--muted); font-size: 13px; }
+
+        .seg {
+            display: flex;
+            background: var(--card-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 3px;
+            min-height: 38px;
+        }
+        .seg button {
+            flex: 1;
+            border: 0;
+            background: transparent;
+            border-radius: 6px;
+            padding: 4px 6px;
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--muted);
+            white-space: nowrap;
+        }
+        .seg button[aria-pressed="true"] { background: var(--accent); color: #fff; font-weight: 600; }
+
+        details.more { margin-bottom: 14px; }
+        details.more summary {
+            cursor: pointer;
+            color: var(--muted);
+            font-size: 13px;
+            user-select: none;
+            margin-bottom: 10px;
+        }
+
+        /* ---------- Table ---------- */
+        .table-wrap {
+            overflow: auto;
+            max-height: calc(100vh - 150px);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            -webkit-overflow-scrolling: touch;
         }
 
         table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
             text-align: center;
             font-size: 15px;
+            font-variant-numeric: tabular-nums;
         }
 
-        th {
-            background-color: #242731;
-            color: #fff;
+        th, td {
+            border-right: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 9px 8px;
+            white-space: nowrap;
+        }
+        tr > :last-child { border-right: 0; }
+        tbody tr:last-child td { border-bottom: 0; }
+
+        thead th {
+            position: sticky;
+            background: var(--head);
             font-weight: 600;
-            padding: 12px 8px;
+            z-index: 2;
+        }
+        thead tr:first-child th { top: 0; }
+        thead tr:nth-child(2) th { top: var(--head1-h, 39px); font-size: 12px; color: var(--muted); font-weight: 500; }
+
+        th.note-col, td.note-name {
+            position: sticky;
+            left: 0;
+            z-index: 1;
+            background: var(--head);
+            font-weight: 700;
+            min-width: 56px;
+        }
+        thead th.note-col { z-index: 3; }
+
+        #noteTable tbody tr:nth-child(even) td:not(.note-name) { background: var(--card-2); }
+
+        td.val {
+            cursor: pointer;
+            font-family: var(--mono);
+            font-size: 14px;
+            transition: background .1s;
+        }
+        td.ms { color: var(--text); font-weight: 600; }
+        td.hz { color: var(--muted); }
+        td.oct-start { border-left: 2px solid var(--border); }
+
+        @media (hover: hover) {
+            td.val:hover { background: var(--accent-soft) !important; outline: 1px solid var(--accent); outline-offset: -1px; }
+            tbody tr:hover td.note-name { color: var(--accent); }
+        }
+
+        tr.in-scale td.note-name { color: var(--scale-text); }
+        tr.in-scale td:not(.note-name) { background-image: linear-gradient(var(--scale), var(--scale)); }
+        tr.root td.note-name::after { content: " ●"; font-size: 9px; vertical-align: middle; }
+
+        td.selected {
+            background: var(--accent) !important;
+            color: #fff !important;
+        }
+        td.near { box-shadow: inset 0 0 0 2px var(--accent); }
+
+        .legend {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 10px;
+        }
+        .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+
+        /* ---------- Converter ---------- */
+        .big-input { position: relative; }
+        .big-input input { font-size: 18px; padding: 12px 44px 12px 12px; min-height: 48px; }
+        .big-input .btn { position: absolute; right: 5px; top: 5px; min-height: 38px; }
+
+        .quick { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+        .chip {
             border: 1px solid var(--border);
+            background: var(--card-2);
+            border-radius: 999px;
+            padding: 3px 10px;
+            font-size: 12px;
+            cursor: pointer;
+            color: var(--muted);
         }
+        .chip:hover { color: var(--text); border-color: var(--accent); }
 
-        th.note-col {
-            background-color: #1e212a;
-        }
-
-        td {
-            padding: 10px 8px;
+        .results { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+        .res {
+            background: var(--card-2);
             border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 10px;
+            cursor: pointer;
+            text-align: left;
+            min-width: 0;
+        }
+        .res:hover { border-color: var(--accent); }
+        .res .k { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+        .res .v { font-family: var(--mono); font-size: 17px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .res.wide { grid-column: span 2; }
+        .res.main { border-color: var(--accent); background: var(--accent-soft); }
+
+        .mults { width: 100%; margin-top: 12px; font-size: 13px; }
+        .mults td, .mults th { padding: 5px 6px; border: 0; border-bottom: 1px solid var(--border); }
+        .mults th { color: var(--muted); font-weight: 500; text-align: left; }
+        .mults td { font-family: var(--mono); cursor: pointer; text-align: right; }
+        .mults td:hover { color: var(--accent); }
+
+        .error { color: #f87171; font-size: 13px; margin-top: 8px; min-height: 1em; }
+
+        /* ---------- Tempo ---------- */
+        .bpm-row { display: flex; gap: 8px; align-items: stretch; }
+        .bpm-row input { font-size: 22px; font-weight: 700; text-align: center; min-height: 48px; }
+        .bpm-row .btn { min-height: 48px; }
+        .tap { min-width: 84px; font-weight: 700; }
+        .tap.flash { background: var(--accent); color: #fff; }
+
+        .tempo-table { width: 100%; margin-top: 12px; font-size: 13px; }
+        .tempo-table th, .tempo-table td { padding: 6px 5px; border: 0; border-bottom: 1px solid var(--border); }
+        .tempo-table th { color: var(--muted); font-weight: 500; font-size: 12px; }
+        .tempo-table td { font-family: var(--mono); cursor: pointer; }
+        .tempo-table td:first-child { font-family: inherit; font-weight: 600; cursor: default; text-align: left; }
+        .tempo-table td:not(:first-child):hover { color: var(--accent); }
+        .tempo-table .hzline { display: block; font-size: 11px; color: var(--muted); }
+
+        /* ---------- Selection bar ---------- */
+        .selbar {
+            position: fixed;
+            left: 50%;
+            bottom: 16px;
+            transform: translate(-50%, 150%);
+            transition: transform .2s ease;
+            background: var(--card);
+            border: 1px solid var(--accent);
+            border-radius: 14px;
+            box-shadow: 0 16px 40px -8px rgba(0,0,0,.45);
+            padding: 10px 12px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            z-index: 20;
+            width: min(640px, calc(100% - 24px));
+        }
+        .selbar.show { transform: translate(-50%, 0); }
+        body.has-sel main { padding-bottom: 110px; }
+        .selbar .note { font-size: 22px; font-weight: 800; min-width: 52px; text-align: center; }
+        .selbar .vals { display: flex; gap: 8px; flex: 1; min-width: 0; }
+        .selbar .vals button {
+            flex: 1;
+            min-width: 0;
+            background: var(--card-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 4px 8px;
+            cursor: pointer;
+            text-align: left;
+        }
+        .selbar .vals button:hover { border-color: var(--accent); }
+        .selbar .vals small { display: block; font-size: 10px; color: var(--muted); text-transform: uppercase; }
+        .selbar .vals b { font-family: var(--mono); font-size: 15px; white-space: nowrap; }
+
+        /* ---------- Toast ---------- */
+        .toast {
+            position: fixed;
+            top: 16px;
+            left: 50%;
+            transform: translate(-50%, -200%);
+            background: var(--text);
+            color: var(--bg);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 50;
+            transition: transform .2s ease;
+            pointer-events: none;
+        }
+        .toast.show { transform: translate(-50%, 0); }
+
+        /* ---------- Bottom nav (mobile) ---------- */
+        nav.tabs { display: none; }
+
+        kbd {
+            font-family: var(--mono);
+            font-size: 11px;
+            border: 1px solid var(--border);
+            border-bottom-width: 2px;
+            border-radius: 4px;
+            padding: 0 4px;
         }
 
-        tr:nth-child(even) {
-            background-color: #1e2028;
+        .print-only { display: none; }
+
+        /* ---------- Tablet ---------- */
+        @media (max-width: 1060px) {
+            main { grid-template-columns: 1fr; }
+            .side { position: static; grid-template-columns: 1fr 1fr; }
         }
 
-        .note-name {
-            font-weight: bold;
-            color: #fff;
-            background-color: #242731;
-        }
+        /* ---------- Mobile ---------- */
+        @media (max-width: 720px) {
+            header.top { padding: 14px 14px 4px; }
+            .subtitle { font-size: 13px; }
+            .top-actions .label { display: none; }
+            .top-actions .btn.primary { width: 38px; padding: 0; }
+            main { padding: 8px 12px calc(96px + env(safe-area-inset-bottom)); gap: 12px; }
+            .side { display: contents; }
+            .card { padding: 14px; border-radius: 10px; }
 
-        .highlight-corrected {
-            color: #60a5fa;
-            font-weight: 500;
-        }
+            [data-panel] { display: none; }
+            body[data-tab="table"] [data-panel="table"],
+            body[data-tab="calc"] [data-panel="calc"],
+            body[data-tab="tempo"] [data-panel="tempo"] { display: block; }
 
-        /* --- PRINT STYLES (Tritt automatisch beim Drucken in Kraft) --- */
-        @media print {
-            @page {
-                size: A4 portrait;
-                margin: 15mm;
+            .controls { grid-template-columns: 1fr 1fr; gap: 8px; }
+            .controls .span2 { grid-column: span 2; }
+            table { font-size: 14px; }
+            th, td { padding: 8px 6px; }
+            td.val { font-size: 13px; }
+            .table-wrap { max-height: calc(100vh - 230px); max-height: calc(100dvh - 230px); }
+            .desk-only { display: none; }
+
+            nav.tabs {
+                display: flex;
+                position: fixed;
+                left: 0; right: 0; bottom: 0;
+                background: var(--card);
+                border-top: 1px solid var(--border);
+                padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+                z-index: 30;
             }
-            
-            body {
-                background: white;
-                color: black;
-                padding: 0;
-            }
-
-            .container {
-                border: none;
-                box-shadow: none;
-                padding: 0;
+            nav.tabs button {
+                flex: 1;
+                border: 0;
                 background: transparent;
-                width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 2px;
+                padding: 6px 0;
+                font-size: 12px;
+                color: var(--muted);
+                border-radius: 8px;
+                cursor: pointer;
             }
+            nav.tabs button svg { width: 22px; height: 22px; }
+            nav.tabs button[aria-selected="true"] { color: var(--accent); background: var(--accent-soft); font-weight: 600; }
 
-            h1 {
-                color: black;
-                font-size: 20pt;
-                margin-bottom: 5px;
-            }
+            body.has-sel main { padding-bottom: calc(170px + env(safe-area-inset-bottom)); }
+            body:not([data-tab="table"]) .selbar { display: none; }
+            .selbar { bottom: calc(76px + env(safe-area-inset-bottom)); padding: 8px; gap: 8px; }
+            .selbar .note { font-size: 18px; min-width: 40px; }
+            .selbar .vals b { font-size: 13px; }
+        }
 
-            p.subtitle {
-                color: #555;
-                font-size: 10pt;
-                margin-bottom: 20px;
+        /* ---------- Print ---------- */
+        @media print {
+            @page { size: A4 portrait; margin: 12mm; }
+            :root, :root[data-theme] {
+                --bg: #fff; --card: #fff; --card-2: #f8fafc; --head: #e2e8f0;
+                --text: #000; --muted: #444; --border: #94a3b8;
+                --scale: rgba(0,0,0,.06); --scale-text: #000;
             }
-
-            .actions {
-                display: none;
-            }
-
-            table {
-                width: 100%;
-                font-size: 11pt;
-            }
-
-            th {
-                background-color: #f1f5f9 !important;
-                color: black !important;
-                border: 1px solid #94a3b8 !important;
-            }
-
-            td {
-                border: 1px solid #cbd5e1 !important;
-                color: black !important;
-            }
-
-            tr:nth-child(even) {
-                background-color: #f8fafc !important;
-            }
-
-            .note-name {
-                background-color: #e2e8f0 !important;
-                color: black !important;
-            }
-
-            .highlight-corrected {
-                color: black !important;
-                font-weight: bold;
-            }
+            body { background: #fff; color: #000; }
+            header.top { padding: 0 0 8px; }
+            .top-actions, .side, nav.tabs, .selbar, .toast, .controls, details.more, .legend, .no-print { display: none !important; }
+            main { display: block; padding: 0; }
+            .card { box-shadow: none; border: 0; padding: 0; }
+            [data-panel="table"] { display: block !important; }
+            .card h2 { display: none; }
+            .table-wrap { overflow: visible; max-height: none; border: 1px solid #94a3b8; }
+            thead th, th.note-col, td.note-name { position: static; }
+            table { font-size: 10pt; }
+            th, td { padding: 5px 4px; }
+            td.val { font-size: 10pt; }
+            td.hz { color: #333; }
+            td.selected { background: transparent !important; color: #000 !important; }
+            td.near { box-shadow: none; }
+            .print-only { display: block; font-size: 9pt; color: #444; margin-top: 8px; }
+            * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
     </style>
 </head>
-<body>
+<body data-tab="table">
 
-    <div class="container">
-        <h1>Audio-Tools: Frequenz zu Millisekunden</h1>
-        <p class="subtitle">Perfekt zum Einstellen von Pre-Delays, Reverb &amp; Kompressor-Release (Korrigierte Version)</p>
-        
-        <div class="actions">
-            <button class="btn-print" onclick="window.print()">Tabelle drucken</button>
+    <header class="top">
+        <div>
+            <h1>Frequenz ↔ Millisekunden</h1>
+            <p class="subtitle">Für Pre-Delay, Reverb, Delay &amp; Kompressor-Release – im Takt mit Tonhöhe und Tempo.</p>
         </div>
+        <div class="top-actions">
+            <button class="btn icon" id="themeBtn" title="Design wechseln" aria-label="Design wechseln"></button>
+            <button class="btn primary" onclick="window.print()" title="Tabelle drucken (Strg+P)" aria-label="Tabelle drucken">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                <span class="label">Drucken</span>
+            </button>
+        </div>
+    </header>
 
-        <table>
-            <thead>
-                <tr>
-                    <th class="note-col" rowspan="2">Note</th>
-                    <th colspan="2">Oktave 1</th>
-                    <th colspan="2">Oktave 2</th>
-                    <th colspan="2">Oktave 3</th>
-                </tr>
-                <tr>
-                    <th>Hz</th>
-                    <th>ms</th>
-                    <th>Hz</th>
-                    <th>ms</th>
-                    <th>Hz</th>
-                    <th>ms</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="note-name">C</td>
-                    <td>32,70</td>
-                    <td>30,58</td>
-                    <td>65,41</td>
-                    <td>15,29</td>
-                    <td>130,81</td>
-                    <td>7,64</td>
-                </tr>
-                <tr>
-                    <td class="note-name">Db</td>
-                    <td>34,65</td>
-                    <td>28,86</td>
-                    <td>69,30</td>
-                    <td>14,43</td>
-                    <td>138,59</td>
-                    <td>7,22</td>
-                </tr>
-                <tr>
-                    <td class="note-name">D</td>
-                    <td>36,71</td>
-                    <td>27,24</td>
-                    <td>73,42</td>
-                    <td>13,62</td>
-                    <td>146,83</td>
-                    <td>6,81</td>
-                </tr>
-                <tr>
-                    <td class="note-name">Eb</td>
-                    <td>38,89</td>
-                    <td>25,71</td>
-                    <td>77,78</td>
-                    <td>12,86</td>
-                    <td>155,56</td>
-                    <td>6,43</td>
-                </tr>
-                <tr>
-                    <td class="note-name">E</td>
-                    <td>41,20</td>
-                    <td>24,27</td>
-                    <td>82,41</td>
-                    <td>12,13</td>
-                    <td>164,81</td>
-                    <td>6,07</td>
-                </tr>
-                <tr>
-                    <td class="note-name">F</td>
-                    <td>43,65</td>
-                    <td>22,91</td>
-                    <td>87,31</td>
-                    <td>11,45</td>
-                    <td>174,61</td>
-                    <td>5,73</td>
-                </tr>
-                <tr>
-                    <td class="note-name">Gb</td>
-                    <td>46,25</td>
-                    <td>21,62</td>
-                    <td>92,50</td>
-                    <td>10,81</td>
-                    <td>185,00</td>
-                    <td>5,41</td>
-                </tr>
-                <tr>
-                    <td class="note-name">G</td>
-                    <td class="highlight-corrected">49,00</td>
-                    <td>20,41</td>
-                    <td>98,00</td>
-                    <td>10,20</td>
-                    <td>196,00</td>
-                    <td>5,10</td>
-                </tr>
-                <tr>
-                    <td class="note-name">Ab</td>
-                    <td class="highlight-corrected">51,91</td>
-                    <td>19,26</td>
-                    <td>103,83</td>
-                    <td>9,63</td>
-                    <td>207,65</td>
-                    <td>4,81</td>
-                </tr>
-                <tr>
-                    <td class="note-name">A</td>
-                    <td>55,00</td>
-                    <td>18,18</td>
-                    <td>110,00</td>
-                    <td>9,09</td>
-                    <td>220,00</td>
-                    <td>4,55</td>
-                </tr>
-                <tr>
-                    <td class="note-name">Bb</td>
-                    <td>58,27</td>
-                    <td>17,16</td>
-                    <td>116,54</td>
-                    <td>8,58</td>
-                    <td>233,08</td>
-                    <td>4,29</td>
-                </tr>
-                <tr>
-                    <td class="note-name">B</td>
-                    <td>61,74</td>
-                    <td>16,20</td>
-                    <td>123,47</td>
-                    <td>8,10</td>
-                    <td>246,94</td>
-                    <td>4,05</td>
-                </tr>
-            </tbody>
-        </table>
+    <main>
+        <!-- ================= TABELLE ================= -->
+        <section class="card" data-panel="table" aria-labelledby="tableTitle">
+            <h2 id="tableTitle">
+                <span>Noten-Tabelle</span>
+                <span class="hint desk-only" style="margin:0;font-weight:400">Zelle anklicken = Auswahl &amp; kopieren · <kbd>/</kbd> Rechner</span>
+            </h2>
+
+            <div class="controls">
+                <label class="field span2 wide">
+                    <span>Oktaven</span>
+                    <div class="inline">
+                        <select id="octFrom" aria-label="Von Oktave"></select>
+                        <span class="sep">bis</span>
+                        <select id="octTo" aria-label="Bis Oktave"></select>
+                    </div>
+                </label>
+                <div class="field span2">
+                    <span>Anzeigen</span>
+                    <div class="seg" id="showSeg" role="group" aria-label="Anzeige">
+                        <button data-v="both">Hz + ms</button>
+                        <button data-v="ms">nur ms</button>
+                        <button data-v="hz">nur Hz</button>
+                    </div>
+                </div>
+                <label class="field">
+                    <span>ms-Faktor (Zyklen)</span>
+                    <select id="cycles">
+                        <option value="0.25">¼ ×</option>
+                        <option value="0.5">½ ×</option>
+                        <option value="1">1 × (Periode)</option>
+                        <option value="2">2 ×</option>
+                        <option value="4">4 ×</option>
+                        <option value="8">8 ×</option>
+                        <option value="16">16 ×</option>
+                        <option value="32">32 ×</option>
+                    </select>
+                </label>
+                <label class="field">
+                    <span>Tonart hervorheben</span>
+                    <select id="keySel"></select>
+                </label>
+            </div>
+
+            <details class="more" id="moreDetails">
+                <summary>Weitere Einstellungen (Stimmung, Format)</summary>
+                <div class="controls" style="margin-bottom:0">
+                    <label class="field">
+                        <span>Kammerton A4 (Hz)</span>
+                        <input type="number" id="a4" min="380" max="500" step="0.1" inputmode="decimal">
+                    </label>
+                    <label class="field">
+                        <span>Nachkommastellen</span>
+                        <select id="decimals">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+                    </label>
+                    <div class="field">
+                        <span>Dezimaltrenner</span>
+                        <div class="seg" id="sepSeg" role="group" aria-label="Dezimaltrenner">
+                            <button data-v=",">12,34</button>
+                            <button data-v=".">12.34</button>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <span>Vorzeichen</span>
+                        <div class="seg" id="accSeg" role="group" aria-label="Vorzeichen">
+                            <button data-v="b">D♭ (b)</button>
+                            <button data-v="#">C♯ (#)</button>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <span>Klick auf Zelle</span>
+                        <div class="seg" id="soundSeg" role="group" aria-label="Ton abspielen">
+                            <button data-v="off">stumm</button>
+                            <button data-v="on">mit Ton</button>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <span>&nbsp;</span>
+                        <button class="btn" id="resetBtn" type="button">Zurücksetzen</button>
+                    </div>
+                </div>
+            </details>
+
+            <div class="table-wrap" id="tableWrap">
+                <table id="noteTable" aria-describedby="tableInfo"></table>
+            </div>
+
+            <div class="legend">
+                <span><i style="background:var(--accent)"></i>Auswahl</span>
+                <span><i style="box-shadow:inset 0 0 0 2px var(--accent)"></i>nächster Ton zum Rechner-Wert</span>
+                <span id="scaleLegend"><i style="background:var(--scale-text)"></i>in Tonart</span>
+            </div>
+            <p class="print-only" id="tableInfo"></p>
+        </section>
+
+        <aside class="side">
+            <!-- ================= RECHNER ================= -->
+            <section class="card" data-panel="calc" aria-labelledby="calcTitle">
+                <h2 id="calcTitle">Rechner</h2>
+                <div class="big-input">
+                    <input type="text" id="calcIn" autocomplete="off" spellcheck="false" inputmode="text"
+                           placeholder="z. B. 440 Hz, 12 ms, A2, C#3" aria-describedby="calcErr">
+                    <button class="btn icon" id="playBtn" title="Ton abspielen" aria-label="Ton abspielen">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                    </button>
+                </div>
+                <div class="quick">
+                    <button class="chip" data-q="E1">E1 (Bass)</button>
+                    <button class="chip" data-q="A1">A1</button>
+                    <button class="chip" data-q="C2">C2</button>
+                    <button class="chip" data-q="100 Hz">100 Hz</button>
+                    <button class="chip" data-q="10 ms">10 ms</button>
+                    <button class="chip" data-q="A4">A4</button>
+                </div>
+                <div class="error" id="calcErr" role="status"></div>
+
+                <div class="results" id="calcRes" hidden>
+                    <button class="res main" data-copy="ms"><div class="k">Periode</div><div class="v" id="rMs"></div></button>
+                    <button class="res main" data-copy="hz"><div class="k">Frequenz</div><div class="v" id="rHz"></div></button>
+                    <button class="res" data-copy="note"><div class="k">Nächste Note</div><div class="v" id="rNote"></div></button>
+                    <button class="res" data-copy="midi"><div class="k">MIDI-Nr.</div><div class="v" id="rMidi"></div></button>
+                    <button class="res" data-copy="lambda"><div class="k">Wellenlänge</div><div class="v" id="rLambda"></div></button>
+                    <button class="res" data-copy="smp"><div class="k">Samples @48k</div><div class="v" id="rSmp"></div></button>
+                </div>
+
+                <table class="mults" id="multTable" hidden>
+                    <thead><tr><th>Vielfache der Periode</th><th style="text-align:right">ms</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+                <p class="hint">Eingabe als Frequenz (Hz), Zeit (ms, s) oder Note (A2, Eb3, C#1). Ohne Einheit: Zahl = Hz. Werte anklicken zum Kopieren.</p>
+            </section>
+
+            <!-- ================= TEMPO ================= -->
+            <section class="card" data-panel="tempo" aria-labelledby="tempoTitle">
+                <h2 id="tempoTitle">Tempo → Delay</h2>
+                <div class="bpm-row">
+                    <button class="btn" id="bpmDown" aria-label="BPM minus 1">−</button>
+                    <input type="number" id="bpm" min="20" max="400" step="0.1" inputmode="decimal" aria-label="BPM">
+                    <button class="btn" id="bpmUp" aria-label="BPM plus 1">+</button>
+                    <button class="btn tap" id="tapBtn" title="Im Takt tippen (Taste T)">TAP</button>
+                </div>
+                <table class="tempo-table" id="tempoTable">
+                    <thead><tr><th style="text-align:left">Note</th><th>normal</th><th>punktiert</th><th>Triole</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+                <p class="hint">ms-Werte für Delay, Pre-Delay &amp; Release; darunter die Rate in Hz für LFOs. Taste <kbd>T</kbd> = Tap-Tempo.</p>
+            </section>
+        </aside>
+    </main>
+
+    <!-- Auswahl-Leiste -->
+    <div class="selbar" id="selbar" role="region" aria-label="Auswahl">
+        <div class="note" id="selNote">–</div>
+        <div class="vals">
+            <button id="selMs"><small>ms · kopieren</small><b></b></button>
+            <button id="selHz"><small>Hz · kopieren</small><b></b></button>
+        </div>
+        <button class="btn icon" id="selPlay" title="Ton abspielen" aria-label="Ton abspielen">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <button class="btn icon" id="selClose" title="Schließen" aria-label="Auswahl schließen">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
     </div>
 
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <!-- Mobile Navigation -->
+    <nav class="tabs" role="tablist" aria-label="Bereiche">
+        <button role="tab" data-tab="table">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/></svg>
+            Tabelle
+        </button>
+        <button role="tab" data-tab="calc">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M8 6h8M8 11h2M14 11h2M8 15h2M14 15h2M8 19h2M14 19h2"/></svg>
+            Rechner
+        </button>
+        <button role="tab" data-tab="tempo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/></svg>
+            Tempo
+        </button>
+    </nav>
+
+<script>
+(function () {
+    'use strict';
+
+    /* ---------- Konstanten ---------- */
+    const NAMES_FLAT  = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+    const NAMES_SHARP = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+    const MAJOR = [0, 2, 4, 5, 7, 9, 11];
+    const MINOR = [0, 2, 3, 5, 7, 8, 10];
+    const SPEED_OF_SOUND = 343; // m/s bei 20 °C
+    const OCT_MIN = 0, OCT_MAX = 8;
+
+    const DEFAULTS = {
+        a4: 440, octFrom: 1, octTo: 3, show: 'both', cycles: 1, decimals: 2,
+        sep: ',', acc: 'b', key: '', sound: 'off', theme: 'auto', bpm: 120,
+        tab: 'table', calc: 'A1'
+    };
+    const STORE_KEY = 'freq-ms-settings-v1';
+
+    let S = Object.assign({}, DEFAULTS);
+    try {
+        const saved = JSON.parse(localStorage.getItem(STORE_KEY) || '{}');
+        Object.assign(S, saved);
+    } catch (e) { /* Speicher nicht verfügbar */ }
+
+    const save = () => {
+        try { localStorage.setItem(STORE_KEY, JSON.stringify(S)); } catch (e) { /* ignorieren */ }
+    };
+
+    const $ = (id) => document.getElementById(id);
+    const isMobile = () => window.matchMedia('(max-width: 720px)').matches;
+
+    /* ---------- Mathe ---------- */
+    const freqOf = (midi) => S.a4 * Math.pow(2, (midi - 69) / 12);
+    const midiOf = (octave, pc) => (octave + 1) * 12 + pc;
+    const noteName = (midi) => {
+        const pc = ((midi % 12) + 12) % 12;
+        const names = S.acc === '#' ? NAMES_SHARP : NAMES_FLAT;
+        return names[pc] + (Math.floor(midi / 12) - 1);
+    };
+    const pcName = (pc) => (S.acc === '#' ? NAMES_SHARP : NAMES_FLAT)[pc];
+
+    /* ---------- Formatierung ---------- */
+    function fmt(n, dec) {
+        if (dec === undefined) dec = S.decimals;
+        if (!isFinite(n)) return '–';
+        const s = n.toLocaleString('en-US', {
+            minimumFractionDigits: dec, maximumFractionDigits: dec, useGrouping: false
+        });
+        return S.sep === ',' ? s.replace('.', ',') : s;
+    }
+    // Automatische Stellen für Werte mit großer Spannweite
+    function fmtAuto(n) {
+        const a = Math.abs(n);
+        const dec = a >= 1000 ? Math.min(S.decimals, 1) : a >= 1 ? Math.max(S.decimals, 2) : 3;
+        return fmt(n, dec);
+    }
+
+    /* ---------- Kopieren & Toast ---------- */
+    let toastTimer;
+    function toast(msg) {
+        const t = $('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => t.classList.remove('show'), 1400);
+    }
+    function copy(text, label) {
+        const done = () => toast('Kopiert: ' + (label || text));
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(done, () => fallbackCopy(text, done));
+        } else {
+            fallbackCopy(text, done);
+        }
+    }
+    function fallbackCopy(text, done) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); done(); } catch (e) { toast(text); }
+        ta.remove();
+    }
+
+    /* ---------- Audio ---------- */
+    let ctx;
+    function play(freq) {
+        if (!isFinite(freq) || freq <= 0) return;
+        try {
+            ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
+            if (ctx.state === 'suspended') ctx.resume();
+            const now = ctx.currentTime;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            // Tiefe Töne leicht mit Obertönen, damit sie auf kleinen Lautsprechern hörbar sind
+            osc.type = freq < 120 ? 'triangle' : 'sine';
+            osc.frequency.value = Math.min(freq, 20000);
+            gain.gain.setValueAtTime(0.0001, now);
+            gain.gain.exponentialRampToValueAtTime(0.25, now + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.2);
+            osc.connect(gain).connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + 1.25);
+        } catch (e) { /* kein Audio */ }
+    }
+
+    /* ---------- Einstellungen UI ---------- */
+    function fillSelects() {
+        const from = $('octFrom'), to = $('octTo');
+        from.innerHTML = to.innerHTML = '';
+        for (let o = OCT_MIN; o <= OCT_MAX; o++) {
+            const label = 'Okt. ' + o + ' · ab ' + fmt(freqOf(midiOf(o, 0)), 0) + ' Hz';
+            from.add(new Option(label, o));
+            to.add(new Option(label, o));
+        }
+        from.value = S.octFrom;
+        to.value = S.octTo;
+
+        const key = $('keySel');
+        key.innerHTML = '';
+        key.add(new Option('keine', ''));
+        for (let pc = 0; pc < 12; pc++) key.add(new Option(pcName(pc) + '-Dur', pc + ':maj'));
+        for (let pc = 0; pc < 12; pc++) key.add(new Option(pcName(pc) + '-Moll', pc + ':min'));
+        key.value = S.key;
+    }
+
+    function syncSeg(id, value) {
+        document.querySelectorAll('#' + id + ' button').forEach((b) => {
+            b.setAttribute('aria-pressed', String(b.dataset.v === value));
+        });
+    }
+
+    function bindSeg(id, prop, after) {
+        $(id).addEventListener('click', (e) => {
+            const b = e.target.closest('button');
+            if (!b) return;
+            S[prop] = b.dataset.v;
+            syncSeg(id, S[prop]);
+            save();
+            after && after();
+        });
+    }
+
+    /* ---------- Tabelle ---------- */
+    let selected = null; // { midi, kind }
+    let nearMidi = null;
+
+    function scaleSet() {
+        if (!S.key) return null;
+        const [pc, type] = S.key.split(':');
+        const root = +pc;
+        return { root, set: new Set((type === 'min' ? MINOR : MAJOR).map((i) => (root + i) % 12)) };
+    }
+
+    function renderTable() {
+        let from = +S.octFrom, to = +S.octTo;
+        if (from > to) [from, to] = [to, from];
+        const showHz = S.show !== 'ms', showMs = S.show !== 'hz';
+        const per = (showHz ? 1 : 0) + (showMs ? 1 : 0);
+        const cyc = +S.cycles;
+        const msLabel = cyc === 1 ? 'ms' : 'ms ×' + (cyc < 1 ? (cyc === 0.5 ? '½' : '¼') : cyc);
+        const sc = scaleSet();
+
+        let h = '<thead><tr><th class="note-col" rowspan="' + (per > 1 ? 2 : 1) + '">Note</th>';
+        for (let o = from; o <= to; o++) {
+            h += '<th colspan="' + per + '" class="' + (o > from ? 'oct-start' : '') + '">Oktave ' + o + '</th>';
+        }
+        h += '</tr>';
+        if (per > 1) {
+            h += '<tr>';
+            for (let o = from; o <= to; o++) {
+                h += '<th class="' + (o > from ? 'oct-start' : '') + '">Hz</th><th>' + msLabel + '</th>';
+            }
+            h += '</tr>';
+        } else {
+            // Einheit in den Oktavkopf schreiben
+            h = h.replace(/Oktave (\d+)<\/th>/g, 'Oktave $1 <small style="font-weight:400;color:var(--muted)">(' + (showHz ? 'Hz' : msLabel) + ')</small></th>');
+        }
+        h += '</thead><tbody>';
+
+        for (let pc = 0; pc < 12; pc++) {
+            const cls = [];
+            if (sc && sc.set.has(pc)) cls.push('in-scale');
+            if (sc && sc.root === pc) cls.push('root');
+            h += '<tr class="' + cls.join(' ') + '"><td class="note-name">' + pcName(pc) + '</td>';
+            for (let o = from; o <= to; o++) {
+                const m = midiOf(o, pc);
+                const f = freqOf(m);
+                const ms = 1000 / f * cyc;
+                const first = o > from ? ' oct-start' : '';
+                const title = noteName(m) + ' · ' + fmt(f) + ' Hz · ' + fmt(ms) + ' ms';
+                if (showHz) h += '<td class="val hz' + first + '" data-m="' + m + '" data-k="hz" title="' + title + '">' + fmt(f) + '</td>';
+                if (showMs) h += '<td class="val ms' + (showHz ? '' : first) + '" data-m="' + m + '" data-k="ms" title="' + title + '">' + fmt(ms) + '</td>';
+            }
+            h += '</tr>';
+        }
+        h += '</tbody>';
+        $('noteTable').innerHTML = h;
+
+        // Höhe der ersten Kopfzeile für die zweite Sticky-Zeile
+        const firstRow = $('noteTable').querySelector('thead tr');
+        if (firstRow) $('noteTable').style.setProperty('--head1-h', firstRow.getBoundingClientRect().height + 'px');
+
+        $('scaleLegend').style.display = sc ? '' : 'none';
+        $('tableInfo').textContent = 'Stimmung A4 = ' + fmt(S.a4, 1) + ' Hz · ms = 1000 / Hz' +
+            (cyc !== 1 ? ' × ' + cyc : '') + (sc ? ' · hervorgehoben: ' + $('keySel').selectedOptions[0].text : '') +
+            ' · Oktaven nach wissenschaftlicher Notation (A4 = Kammerton, C4 = eingestrichenes c)';
+        applyMarks();
+    }
+
+    function applyMarks() {
+        document.querySelectorAll('#noteTable td.selected, #noteTable td.near').forEach((td) => td.classList.remove('selected', 'near'));
+        if (selected) {
+            const td = document.querySelector('#noteTable td[data-m="' + selected.midi + '"][data-k="' + selected.kind + '"]') ||
+                       document.querySelector('#noteTable td[data-m="' + selected.midi + '"]');
+            if (td) td.classList.add('selected');
+        }
+        if (nearMidi !== null) {
+            document.querySelectorAll('#noteTable td[data-m="' + nearMidi + '"]').forEach((td) => td.classList.add('near'));
+        }
+    }
+
+    function select(midi, kind, doCopy) {
+        selected = { midi, kind };
+        applyMarks();
+        const f = freqOf(midi);
+        const ms = 1000 / f * S.cycles;
+        $('selNote').textContent = noteName(midi);
+        $('selMs').querySelector('b').textContent = fmt(ms) + ' ms';
+        $('selHz').querySelector('b').textContent = fmt(f) + ' Hz';
+        $('selMs').querySelector('small').textContent = (S.cycles == 1 ? 'Periode' : S.cycles + ' × Periode') + ' · kopieren';
+        $('selbar').classList.add('show');
+        document.body.classList.add('has-sel');
+        if (doCopy) {
+            const v = kind === 'hz' ? fmt(f) : fmt(ms);
+            copy(v, v + (kind === 'hz' ? ' Hz' : ' ms') + ' (' + noteName(midi) + ')');
+        }
+        if (S.sound === 'on') play(f);
+    }
+
+    $('noteTable').addEventListener('click', (e) => {
+        const td = e.target.closest('td.val');
+        if (td) {
+            select(+td.dataset.m, td.dataset.k, true);
+            return;
+        }
+        const nn = e.target.closest('td.note-name');
+        if (nn) {
+            // Klick auf Notennamen: mittlere sichtbare Oktave abspielen
+            const pc = nn.parentElement.rowIndex - $('noteTable').tHead.rows.length;
+            const o = Math.round((+S.octFrom + +S.octTo) / 2);
+            play(freqOf(midiOf(o, pc)));
+        }
+    });
+
+    $('selMs').addEventListener('click', () => {
+        if (!selected) return;
+        const v = fmt(1000 / freqOf(selected.midi) * S.cycles);
+        copy(v, v + ' ms');
+    });
+    $('selHz').addEventListener('click', () => {
+        if (!selected) return;
+        const v = fmt(freqOf(selected.midi));
+        copy(v, v + ' Hz');
+    });
+    $('selPlay').addEventListener('click', () => selected && play(freqOf(selected.midi)));
+    $('selClose').addEventListener('click', () => {
+        selected = null;
+        applyMarks();
+        $('selbar').classList.remove('show');
+        document.body.classList.remove('has-sel');
+    });
+
+    /* ---------- Rechner ---------- */
+    let calcFreq = null;
+
+    function parseNum(s) {
+        s = s.trim().replace(/\s/g, '');
+        // "1.234,5" oder "1,5" → 1234.5 / 1.5
+        if (s.indexOf(',') >= 0 && s.indexOf('.') >= 0) s = s.replace(/\./g, '').replace(',', '.');
+        else s = s.replace(',', '.');
+        return parseFloat(s);
+    }
+
+    function parseInput(raw) {
+        const s = raw.trim();
+        if (!s) return null;
+
+        // Note: C#3, Eb2, h1, A-1, Bb, H2 ...
+        const nm = s.match(/^([A-Ha-h])\s*(#|♯|b|♭|is|es|s)?\s*(-?\d{1,2})?$/);
+        if (nm && !/^\d/.test(s)) {
+            let letter = nm[1].toUpperCase();
+            let acc = nm[2] || '';
+            // Deutsches H = B, deutsches B = Bb
+            if (letter === 'H') letter = 'B';
+            const base = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 }[letter];
+            let pc = base;
+            if (acc === '#' || acc === '♯' || acc === 'is') pc += 1;
+            if (acc === 'b' || acc === '♭' || acc === 'es' || acc === 's') pc -= 1;
+            const oct = nm[3] !== undefined ? parseInt(nm[3], 10) : 4;
+            const midi = (oct + 1) * 12 + pc;
+            return { freq: freqOf(midi), from: 'note' };
+        }
+
+        // MIDI: "midi 45" / "m45"
+        const mm = s.match(/^(?:midi|m)\s*(\d{1,3})$/i);
+        if (mm) return { freq: freqOf(+mm[1]), from: 'midi' };
+
+        const um = s.match(/^([\d.,\s]+)\s*(hz|khz|ms|s|sek|sec|smp|samples?)?$/i);
+        if (um) {
+            const n = parseNum(um[1]);
+            if (!isFinite(n) || n <= 0) return { error: 'Bitte einen Wert größer 0 eingeben.' };
+            const unit = (um[2] || 'hz').toLowerCase();
+            if (unit === 'hz') return { freq: n, from: 'hz' };
+            if (unit === 'khz') return { freq: n * 1000, from: 'hz' };
+            if (unit === 'ms') return { freq: 1000 / n, from: 'ms' };
+            if (unit === 's' || unit === 'sek' || unit === 'sec') return { freq: 1 / n, from: 'ms' };
+            return { freq: 48000 / n, from: 'smp' };
+        }
+        return { error: 'Nicht erkannt. Beispiele: 440 Hz · 12,5 ms · A2 · C#3 · midi 45' };
+    }
+
+    function updateCalc() {
+        const raw = $('calcIn').value;
+        const r = parseInput(raw);
+        S.calc = raw;
+        save();
+
+        if (!r || r.error) {
+            $('calcErr').textContent = r ? r.error : '';
+            $('calcRes').hidden = true;
+            $('multTable').hidden = true;
+            calcFreq = null;
+            nearMidi = null;
+            applyMarks();
+            return;
+        }
+        $('calcErr').textContent = '';
+        const f = r.freq;
+        calcFreq = f;
+        const ms = 1000 / f;
+        const midiF = 69 + 12 * Math.log2(f / S.a4);
+        const midi = Math.round(midiF);
+        const cents = Math.round((midiF - midi) * 100);
+
+        $('rMs').textContent = fmtAuto(ms) + ' ms';
+        $('rHz').textContent = fmtAuto(f) + ' Hz';
+        $('rNote').textContent = noteName(midi) + (cents ? ' ' + (cents > 0 ? '+' : '−') + Math.abs(cents) + ' ct' : '');
+        $('rMidi').textContent = (midi >= 0 && midi <= 127) ? String(midi) : '–';
+        const lam = SPEED_OF_SOUND / f;
+        $('rLambda').textContent = lam >= 1 ? fmt(lam, 2) + ' m' : fmt(lam * 100, 1) + ' cm';
+        $('rSmp').textContent = fmt(48000 / f, 1);
+        $('calcRes').hidden = false;
+
+        const mults = [[0.25, '¼'], [0.5, '½'], [2, '2 ×'], [4, '4 ×'], [8, '8 ×'], [16, '16 ×'], [32, '32 ×']];
+        $('multTable').tBodies[0].innerHTML = mults.map(([m, l]) =>
+            '<tr><th>' + l + '</th><td data-v="' + fmtAuto(ms * m) + '">' + fmtAuto(ms * m) + '</td></tr>').join('');
+        $('multTable').hidden = false;
+
+        nearMidi = (midi >= midiOf(OCT_MIN, 0) && midi <= midiOf(OCT_MAX, 11)) ? midi : null;
+        applyMarks();
+    }
+
+    $('calcIn').addEventListener('input', updateCalc);
+    $('calcIn').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); play(calcFreq); }
+        if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+            // Halbtonschritte mit Pfeiltasten
+            if (!calcFreq) return;
+            e.preventDefault();
+            const midi = Math.round(69 + 12 * Math.log2(calcFreq / S.a4)) + (e.key === 'ArrowUp' ? 1 : -1);
+            $('calcIn').value = noteName(midi);
+            updateCalc();
+        }
+    });
+    $('playBtn').addEventListener('click', () => play(calcFreq));
+    document.querySelectorAll('.chip[data-q]').forEach((c) => c.addEventListener('click', () => {
+        $('calcIn').value = c.dataset.q;
+        updateCalc();
+    }));
+    $('calcRes').addEventListener('click', (e) => {
+        const b = e.target.closest('.res');
+        if (!b) return;
+        const v = b.querySelector('.v').textContent;
+        copy(v.replace(/\s*(ms|Hz|m|cm)$/, '').replace(/\s[+−]\d+ ct$/, ''), v);
+    });
+    $('multTable').addEventListener('click', (e) => {
+        const td = e.target.closest('td[data-v]');
+        if (td) copy(td.dataset.v, td.dataset.v + ' ms');
+    });
+
+    /* ---------- Tempo ---------- */
+    const VALUES = [
+        ['1/1', 4], ['1/2', 2], ['1/4', 1], ['1/8', 0.5], ['1/16', 0.25], ['1/32', 0.125], ['1/64', 0.0625]
+    ];
+
+    function renderTempo() {
+        const bpm = +S.bpm;
+        const beat = 60000 / bpm;
+        const body = VALUES.map(([label, beats]) => {
+            const cells = [1, 1.5, 2 / 3].map((mul) => {
+                const ms = beat * beats * mul;
+                const hz = 1000 / ms;
+                return '<td data-v="' + fmt(ms) + '" data-l="' + label + '">' + fmt(ms) +
+                       '<span class="hzline">' + fmt(hz, hz < 10 ? 2 : 1) + ' Hz</span></td>';
+            }).join('');
+            return '<tr><td>' + label + '</td>' + cells + '</tr>';
+        }).join('');
+        $('tempoTable').tBodies[0].innerHTML = body;
+    }
+
+    function setBpm(v, fromInput) {
+        v = Math.max(20, Math.min(400, v));
+        if (!isFinite(v)) return;
+        S.bpm = Math.round(v * 10) / 10;
+        if (!fromInput) $('bpm').value = S.bpm;
+        save();
+        renderTempo();
+    }
+
+    $('bpm').addEventListener('input', () => {
+        const v = parseNum($('bpm').value);
+        if (v >= 20 && v <= 400) setBpm(v, true);
+    });
+    $('bpm').addEventListener('change', () => setBpm(parseNum($('bpm').value) || DEFAULTS.bpm));
+    $('bpmUp').addEventListener('click', () => setBpm(Math.floor(+S.bpm) + 1));
+    $('bpmDown').addEventListener('click', () => setBpm(Math.ceil(+S.bpm) - 1));
+    $('tempoTable').addEventListener('click', (e) => {
+        const td = e.target.closest('td[data-v]');
+        if (!td) return;
+        const col = ['', '', ' punktiert', ' Triole'][td.cellIndex];
+        copy(td.dataset.v, td.dataset.v + ' ms (' + td.dataset.l + col + ')');
+    });
+
+    let taps = [];
+    function tap() {
+        const now = performance.now();
+        if (taps.length && now - taps[taps.length - 1] > 2000) taps = [];
+        taps.push(now);
+        if (taps.length > 8) taps.shift();
+        const b = $('tapBtn');
+        b.classList.add('flash');
+        setTimeout(() => b.classList.remove('flash'), 90);
+        if (taps.length >= 2) {
+            const avg = (taps[taps.length - 1] - taps[0]) / (taps.length - 1);
+            setBpm(60000 / avg);
+            b.textContent = 'TAP ' + taps.length;
+        } else {
+            b.textContent = 'TAP …';
+        }
+        clearTimeout(tap.t);
+        tap.t = setTimeout(() => { b.textContent = 'TAP'; }, 2000);
+    }
+    $('tapBtn').addEventListener('pointerdown', (e) => { e.preventDefault(); tap(); });
+    $('tapBtn').addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tap(); } });
+
+    /* ---------- Theme ---------- */
+    const THEME_ICONS = {
+        auto: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor"/></svg>',
+        light: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+        dark: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>'
+    };
+    const THEME_LABEL = { auto: 'Design: automatisch', light: 'Design: hell', dark: 'Design: dunkel' };
+    function applyTheme() {
+        if (S.theme === 'auto') document.documentElement.removeAttribute('data-theme');
+        else document.documentElement.setAttribute('data-theme', S.theme);
+        $('themeBtn').innerHTML = THEME_ICONS[S.theme];
+        $('themeBtn').title = THEME_LABEL[S.theme] + ' (klicken zum Wechseln)';
+    }
+    $('themeBtn').addEventListener('click', () => {
+        S.theme = { auto: 'light', light: 'dark', dark: 'auto' }[S.theme] || 'auto';
+        save();
+        applyTheme();
+        toast(THEME_LABEL[S.theme]);
+    });
+
+    /* ---------- Tabs (mobil) ---------- */
+    function setTab(t) {
+        S.tab = t;
+        document.body.dataset.tab = t;
+        document.querySelectorAll('nav.tabs button').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === t)));
+        save();
+        if (t === 'table') requestAnimationFrame(renderTable);
+    }
+    document.querySelectorAll('nav.tabs button').forEach((b) => b.addEventListener('click', () => {
+        setTab(b.dataset.tab);
+        window.scrollTo({ top: 0 });
+    }));
+
+    /* ---------- Einstellungen binden ---------- */
+    $('octFrom').addEventListener('change', (e) => {
+        S.octFrom = +e.target.value;
+        if (S.octFrom > S.octTo) { S.octTo = S.octFrom; $('octTo').value = S.octTo; }
+        save(); renderTable();
+    });
+    $('octTo').addEventListener('change', (e) => {
+        S.octTo = +e.target.value;
+        if (S.octTo < S.octFrom) { S.octFrom = S.octTo; $('octFrom').value = S.octFrom; }
+        save(); renderTable();
+    });
+    $('cycles').addEventListener('change', (e) => {
+        S.cycles = +e.target.value; save(); renderTable();
+        if (selected) select(selected.midi, selected.kind, false);
+    });
+    $('keySel').addEventListener('change', (e) => { S.key = e.target.value; save(); renderTable(); });
+    $('decimals').addEventListener('change', (e) => { S.decimals = +e.target.value; save(); refreshAll(); });
+    $('a4').addEventListener('input', (e) => {
+        const v = parseNum(e.target.value);
+        if (v >= 380 && v <= 500) { S.a4 = v; save(); refreshAll(); }
+    });
+    $('a4').addEventListener('change', (e) => {
+        const v = parseNum(e.target.value);
+        if (!(v >= 380 && v <= 500)) { e.target.value = S.a4; toast('A4 muss zwischen 380 und 500 Hz liegen'); }
+    });
+    bindSeg('showSeg', 'show', renderTable);
+    bindSeg('sepSeg', 'sep', refreshAll);
+    bindSeg('accSeg', 'acc', refreshAll);
+    bindSeg('soundSeg', 'sound');
+    $('resetBtn').addEventListener('click', () => {
+        const keep = { theme: S.theme, tab: S.tab };
+        S = Object.assign({}, DEFAULTS, keep);
+        save();
+        init();
+        toast('Einstellungen zurückgesetzt');
+    });
+
+    function refreshAll() {
+        const k = S.key;
+        fillSelects();
+        $('keySel').value = k;
+        renderTable();
+        renderTempo();
+        updateCalc();
+        if (selected) select(selected.midi, selected.kind, false);
+    }
+
+    /* ---------- Tastatur ---------- */
+    document.addEventListener('keydown', (e) => {
+        const tag = (e.target.tagName || '').toLowerCase();
+        const typing = tag === 'input' || tag === 'select' || tag === 'textarea';
+        if (e.key === 'Escape') {
+            if (typing) e.target.blur();
+            $('selClose').click();
+            return;
+        }
+        if (typing || e.ctrlKey || e.metaKey || e.altKey) return;
+        if (e.key === '/') {
+            e.preventDefault();
+            if (isMobile()) setTab('calc');
+            $('calcIn').focus();
+            $('calcIn').select();
+        } else if (e.key === 't' || e.key === 'T') {
+            tap();
+        } else if (e.key === ' ' && selected) {
+            e.preventDefault();
+            play(freqOf(selected.midi));
+        }
+    });
+
+    window.addEventListener('beforeprint', () => { $('selbar').classList.remove('show'); });
+    let rT;
+    window.addEventListener('resize', () => { clearTimeout(rT); rT = setTimeout(renderTable, 150); });
+
+    /* ---------- Start ---------- */
+    function init() {
+        fillSelects();
+        $('cycles').value = String(S.cycles);
+        $('decimals').value = String(S.decimals);
+        $('a4').value = S.a4;
+        $('bpm').value = S.bpm;
+        $('calcIn').value = S.calc;
+        syncSeg('showSeg', S.show);
+        syncSeg('sepSeg', S.sep);
+        syncSeg('accSeg', S.acc);
+        syncSeg('soundSeg', S.sound);
+        applyTheme();
+        setTab(S.tab || 'table');
+        renderTable();
+        renderTempo();
+        updateCalc();
+    }
+
+    init();
+})();
+</script>
 </body>
 </html>
